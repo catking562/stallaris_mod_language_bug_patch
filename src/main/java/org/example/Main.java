@@ -17,31 +17,25 @@ public class Main {
     }
 
     public static void replaceLanguage(File file) {
-        file.renameTo(new File(file.toURI().toString().replace("english", "korean")));
-        FileInputStream input;
-        FileOutputStream output;
-        BufferedReader reader;
-        BufferedWriter writer;
-        try {
-            input = new FileInputStream(file);
-            output = new FileOutputStream(file);
-            reader = new BufferedReader(new InputStreamReader(input));
-            writer = new BufferedWriter(new OutputStreamWriter(output));
-        }catch(Exception e) {
-            System.out.println("생성 중에 오류남.");
+        file.renameTo(new File(file.getPath().replaceAll("english", "korean")));
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line.replaceAll("english", "korean")).append("\n");
+            }
+        } catch (IOException e) {
+            System.out.println("파일 읽기 중 오류 발생");
             e.printStackTrace();
             return;
         }
-        try{
-            String line;
-            String afterline;
-            while((line = reader.readLine())!=null) {
-                afterline = line.replaceAll("english", "korean");
-                writer.write(afterline, 0, afterline.length());
-                writer.newLine();
-            }
-        }catch(Exception e) {
-            System.out.println("바꾸는 중에 오류남");
+
+        // 변경된 내용을 파일에 다시 씀
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(content.toString());
+        } catch (IOException e) {
+            System.out.println("파일 쓰기 중 오류 발생");
             e.printStackTrace();
         }
     }
@@ -52,7 +46,7 @@ public class Main {
             System.out.println("Please enter the location of your folder: ");
             String fileName = sc.nextLine();
             File folder = new File(fileName);
-
+            replaceInFolder(folder);
         }
     }
 }
