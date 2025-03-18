@@ -17,6 +17,10 @@ public class Main {
     }
 
     public static void replaceLanguage(File file) {
+        if(!file.getPath().contains(".yml")||!file.getPath().contains("localisation")) {
+            return;
+        }
+        System.out.println(file.getPath());
         file.renameTo(new File(file.getPath().replaceAll("english", "korean")));
         StringBuilder content = new StringBuilder();
 
